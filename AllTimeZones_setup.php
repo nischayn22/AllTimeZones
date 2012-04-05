@@ -34,30 +34,30 @@ $wgExtensionCredits['validextensionclass'][] = array(
 $wgHooks['ParserFirstCallInit'][] = 'wfTimezoneSetup';
  
 function wfTimezoneSetup( Parser $parser ) {
-        $parser->setHook( 'timezone', 'wfTimezone' );
-       return true;
+    $parser->setHook( 'timezone', 'wfTimezone' );
+    return true;
 }
  
 function wfTimezone( $input, array $args, Parser $parser, PPFrame $frame ) {
 
-		//time to convert (format specified below)
-		//$time = 'Tuesday, April 21, 2009 2:32:46 PM';
-		$time = $args['time'];
+	//time to convert (format specified below)
+	//$time = 'Tuesday, April 21, 2009 2:32:46 PM';
+	$time = $args['time'];
 
-		//time zone provided by the user
-		$input_tz = $args['zone'];
+	//time zone provided by the user
+	$input_tz = $args['zone'];
 
-		// create the DateTimeZone object
-		$dtzone = new DateTimeZone($input_tz);
+	// create the DateTimeZone object
+	$dtzone = new DateTimeZone($input_tz);
  
-		// now create the DateTime object for this time and user time zone
-		$dtime = new DateTime($time, $dtzone);
+	// now create the DateTime object for this time and user time zone
+	$dtime = new DateTime($time, $dtzone);
  
-		// Get the timestamp
-		$timestamp = $dtime->format('U');
+	// Get the timestamp
+	$timestamp = $dtime->format('U');
 
-		// create an array listing the time zones
-		$timezones = array(
+	// create an array listing the time zones
+	$timezones = array(
 		'Kwajalein' => '(GMT-12:00) International Date Line West',
 		'Pacific/Midway' => '(GMT-11:00) Midway Island',
 		'Pacific/Samoa' => '(GMT-11:00) Samoa',
@@ -185,31 +185,31 @@ function wfTimezone( $input, array $args, Parser $parser, PPFrame $frame ) {
 		'Pacific/Auckland' => '(GMT+12:00) Auckland',
 		'Pacific/Tongatapu' => '(GMT+13:00) Nukualofa');
 	
-		$html = '<select name="tz">';
+	$html = '<select name="tz">';
 		
-		foreach( $timezones as $tz => $tz_description ){	
+	foreach( $timezones as $tz => $tz_description ){	
 			
-			// create the DateTimeZone object
-			$dtzone = new DateTimeZone($tz);
+		// create the DateTimeZone object
+		$dtzone = new DateTimeZone($tz);
 			
-			// first convert the timestamp into a string representing the local time
-			$time = date('r', $timestamp);
+		// first convert the timestamp into a string representing the local time
+		$time = date('r', $timestamp);
  
-			// now create the DateTime object for this time
-			$dtime = new DateTime($time);
+		// now create the DateTime object for this time
+		$dtime = new DateTime($time);
  
-			// convert this to the specific timezone using the DateTimeZone object
-			$dtime->setTimeZone($dtzone);
+		// convert this to the specific timezone using the DateTimeZone object
+		$dtime->setTimeZone($dtzone);
  
-			// print the time using your preferred format 
-			// TODO add new formats
-			$time = $dtime->format('g:i A m/d/y');
-			if($tz==$input_tz)
-				$html .= '<option selected ="true" value="' . $tz_description . '">' . $tz . ' ' .  $time . '</option>';
-			else
-				$html .= '<option value="' . $tz_description . '">' . $tz . ' ' . $time . '</option>';
-			
-		}
-		$html .= '</select>';
-		return $html;
+		// print the time using your preferred format 
+		// TODO add new formats
+		$time = $dtime->format('g:i A m/d/y');
+		if($tz==$input_tz)
+			$html .= '<option selected ="true" value="' . $tz_description . '">' . $tz . ' ' .  $time . '</option>';
+		else
+			$html .= '<option value="' . $tz_description . '">' . $tz . ' ' . $time . '</option>';
+	}
+	
+	$html .= '</select>';
+	return $html;
 }
