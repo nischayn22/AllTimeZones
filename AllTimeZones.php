@@ -1,6 +1,6 @@
 <?php
 /**
- * AllTimeZones - this extension is lets you put dates in all timezones in a page
+ * AllTimeZones - this extension lets you put dates in all timezones in a page
  *
  * To activate this extension, add the following into your LocalSettings.php file:
  * require_once('$IP/extensions/AllTimeZones.php');
@@ -8,7 +8,7 @@
  * @ingroup Extensions
  * @author Nischay Nahata <nischayn22@gmail.com>
  * @version 1.0
- * @link https://www.mediawiki.org/wiki/Extension:MyExtension Documentation
+ * @link https://www.mediawiki.org/wiki/Extension:AllTimeZones
  */
  
 /**
@@ -21,15 +21,17 @@ if( !defined( 'MEDIAWIKI' ) ) {
 }
  
 // Extension credits that will show up on Special:Version    
-$wgExtensionCredits['validextensionclass'][] = array(
+$wgExtensionCredits['parser extensions'][] = array(
         'path'           => __FILE__,
         'name'           => 'AllTimeZones',
-        'version'        => '1.0',
+        'version'        => '0.1',
         'author'         => 'Nischay Nahata', 
-        'url'            => 'https://www.mediawiki.org/wiki/Extension:MyExtension',
+        'url'            => 'https://www.mediawiki.org/wiki/Extension:AllTimeZones',
         'descriptionmsg' => 'alltimezones',
-        'description'    => 'This extension is a tag extension and lets you show dates in all time zones'
 );
+
+$wgAllTimeZonesIP = dirname( __FILE__ ) . '/';
+$wgExtensionMessagesFiles['AllTimeZones'] = $wgAllTimeZonesIP . 'AllTimeZones.i18n.php';
 
 $wgHooks['ParserFirstCallInit'][] = 'wfTimezoneSetup';
  
@@ -45,10 +47,10 @@ function wfTimezone( $input, array $args, Parser $parser, PPFrame $frame ) {
 	$time = $args['time'];
 
 	//time zone provided by the user
-	$input_tz = $args['zone'];
+	$inputTz = $args['zone'];
 
 	// create the DateTimeZone object
-	$dtzone = new DateTimeZone($input_tz);
+	$dtzone = new DateTimeZone($inputTz);
  
 	// now create the DateTime object for this time and user time zone
 	$dtime = new DateTime($time, $dtzone);
@@ -185,9 +187,9 @@ function wfTimezone( $input, array $args, Parser $parser, PPFrame $frame ) {
 		'Pacific/Auckland' => '(GMT+12:00) Auckland',
 		'Pacific/Tongatapu' => '(GMT+13:00) Nukualofa');
 	
-	$html = '<select name="tz">';
-		
-	foreach( $timezones as $tz => $tz_description ){	
+	$html = Xml::openElement( 'select', array( 'name' => 'tz' ) );
+
+	foreach( $timezones as $tz => $tzDescription ){	
 			
 		// create the DateTimeZone object
 		$dtzone = new DateTimeZone($tz);
@@ -204,12 +206,13 @@ function wfTimezone( $input, array $args, Parser $parser, PPFrame $frame ) {
 		// print the time using your preferred format 
 		// TODO add new formats
 		$time = $dtime->format('g:i A m/d/y');
-		if($tz==$input_tz)
-			$html .= '<option selected ="true" value="' . $tz_description . '">' . $tz . ' ' .  $time . '</option>';
+		if($tz==$inputTz)
+			$html .= Xml::option( $tz.' '.$time, $tzDescription, true );			
 		else
-			$html .= '<option value="' . $tz_description . '">' . $tz . ' ' . $time . '</option>';
+			$html .= Xml::option( $tz.' '.$time, $tzDescription, false );
 	}
 	
-	$html .= '</select>';
+	$html .= Xml::closeElement( 'select' );
+
 	return $html;
 }
