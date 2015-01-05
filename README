@@ -2,7 +2,7 @@
 
 #To install place this directory in your extensions directory and add the following line in your LocalSettings.php file in the bottom
 
-  include_once('extensions/AllTimeZones/AllTimeZones.php');
+  require_once "$IP/extensions/AllTimeZones/AllTimeZones.php";
 	
 	
 #More information can be found at www.mediawiki.org/wiki/Extensions:AllTimeZones
